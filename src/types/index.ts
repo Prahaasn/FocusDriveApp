@@ -119,6 +119,7 @@ export type RootStackParamList = {
   Welcome: undefined;
   SignIn: undefined;
   SignUp: undefined;
+  ForgotPassword: undefined;
   MainTabs: undefined;
   SessionDetail: { sessionId: string };
 };
