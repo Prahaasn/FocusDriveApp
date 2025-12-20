@@ -15,7 +15,19 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { COLORS, APP_CONFIG } from '../../constants';
+import { TYPOGRAPHY } from '../../constants/typography';
+import { SPACING, RADIUS, SHADOWS } from '../../constants/spacing';
 import type { User, Vehicle } from '../../types';
+import {
+  BellIcon,
+  LocationIcon,
+  MoonIcon,
+  HelpCircleIcon,
+  ShieldIcon,
+  FileTextIcon,
+  LogOutIcon,
+  ChevronRightIcon,
+} from '../../components/icons/Icons';
 
 // ============================================
 // Types
@@ -422,7 +434,9 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
       <View style={styles.settingsContainer}>
         <View style={styles.settingRow}>
           <View style={styles.settingLeft}>
-            <Text style={styles.settingIcon}>🔔</Text>
+            <View style={styles.settingIconContainer}>
+              <BellIcon size={20} color={COLORS.primary} />
+            </View>
             <Text style={styles.settingLabel}>Notifications</Text>
           </View>
           <Switch
@@ -437,7 +451,9 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
 
         <View style={styles.settingRow}>
           <View style={styles.settingLeft}>
-            <Text style={styles.settingIcon}>📍</Text>
+            <View style={styles.settingIconContainer}>
+              <LocationIcon size={20} color={COLORS.primary} />
+            </View>
             <Text style={styles.settingLabel}>Location</Text>
           </View>
           <Switch
@@ -452,7 +468,9 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
 
         <View style={styles.settingRow}>
           <View style={styles.settingLeft}>
-            <Text style={styles.settingIcon}>🌙</Text>
+            <View style={styles.settingIconContainer}>
+              <MoonIcon size={20} color={COLORS.primary} />
+            </View>
             <Text style={styles.settingLabel}>Dark Mode</Text>
           </View>
           <View style={styles.lockedContainer}>
@@ -469,7 +487,7 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
 // ============================================
 
 interface LinkItemProps {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   onPress: () => void;
   danger?: boolean;
@@ -478,10 +496,13 @@ interface LinkItemProps {
 const LinkItem: React.FC<LinkItemProps> = ({ icon, label, onPress, danger }) => {
   return (
     <TouchableOpacity style={styles.linkItem} onPress={onPress}>
-      <Text style={styles.linkIcon}>{icon}</Text>
+      <View style={styles.linkIconContainer}>{icon}</View>
       <Text style={[styles.linkLabel, danger && styles.linkLabelDanger]}>
         {label}
       </Text>
+      <View style={styles.linkChevron}>
+        <ChevronRightIcon size={20} color={COLORS.textTertiary} />
+      </View>
     </TouchableOpacity>
   );
 };
@@ -706,11 +727,23 @@ export const ProfileScreen: React.FC = () => {
 
         {/* Links Section */}
         <View style={styles.linksSection}>
-          <LinkItem icon="📱" label="Help & Support" onPress={handleHelpPress} />
-          <LinkItem icon="🔒" label="Data & Privacy" onPress={handlePrivacyPress} />
-          <LinkItem icon="📄" label="Terms of Service" onPress={handleTermsPress} />
           <LinkItem
-            icon="🚪"
+            icon={<HelpCircleIcon size={20} color={COLORS.info} />}
+            label="Help & Support"
+            onPress={handleHelpPress}
+          />
+          <LinkItem
+            icon={<ShieldIcon size={20} color={COLORS.info} />}
+            label="Data & Privacy"
+            onPress={handlePrivacyPress}
+          />
+          <LinkItem
+            icon={<FileTextIcon size={20} color={COLORS.info} />}
+            label="Terms of Service"
+            onPress={handleTermsPress}
+          />
+          <LinkItem
+            icon={<LogOutIcon size={20} color={COLORS.danger} />}
             label="Sign Out"
             onPress={handleSignOut}
             danger
@@ -907,12 +940,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  settingIcon: {
-    fontSize: 18,
-    marginRight: 12,
+  settingIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.primaryTransparent || COLORS.successTransparent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.md,
   },
   settingLabel: {
-    fontSize: 16,
+    ...TYPOGRAPHY.body.large,
     color: COLORS.textPrimary,
   },
   settingDivider: {
@@ -933,27 +971,38 @@ const styles = StyleSheet.create({
 
   // Links Section
   linksSection: {
-    marginTop: 16,
+    marginTop: SPACING.lg,
   },
   linkItem: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.surface,
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    marginBottom: 8,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.lg,
+    paddingHorizontal: SPACING.lg,
+    marginBottom: SPACING.sm,
+    ...SHADOWS.sm,
   },
-  linkIcon: {
-    fontSize: 18,
-    marginRight: 12,
+  linkIconContainer: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.md,
   },
   linkLabel: {
-    fontSize: 16,
+    ...TYPOGRAPHY.body.large,
     color: COLORS.textPrimary,
+    flex: 1,
   },
   linkLabelDanger: {
     color: COLORS.danger,
+  },
+  linkChevron: {
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   // Version Text

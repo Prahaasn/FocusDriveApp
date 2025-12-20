@@ -13,8 +13,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS, getRiskColor } from '../../constants/colors';
+import { TYPOGRAPHY } from '../../constants/typography';
+import { SPACING, RADIUS, SHADOWS } from '../../constants/spacing';
 import { formatDate, formatTime, formatDuration } from '../../utils/formatting';
 import { RootStackParamList, DrivingSession, DistractionReason } from '../../types';
+import {
+  PhoneIcon,
+  EyesClosedIcon,
+  DrowsyIcon,
+  HeadDownIcon,
+  LookingAwayIcon,
+  AlertTriangleIcon,
+  CloseIcon,
+  ChartBarIcon,
+} from '../../components/icons/Icons';
 
 // Filter options for session history
 type FilterOption = 'all' | 'today' | 'week' | 'month';
@@ -38,21 +50,21 @@ const FilterButton: React.FC<FilterButtonProps> = ({ label, value, selected, onP
   </TouchableOpacity>
 );
 
-// Get icon for distraction reason
-const getDistractionIcon = (reason: DistractionReason): string => {
+// Get icon component for distraction reason
+const getDistractionIcon = (reason: DistractionReason, size: number = 18, color: string = COLORS.textSecondary) => {
   switch (reason) {
     case 'PHONE':
-      return '📱';
+      return <PhoneIcon size={size} color={color} />;
     case 'EYES_CLOSED':
-      return '😴';
+      return <EyesClosedIcon size={size} color={color} />;
     case 'DROWSY':
-      return '😪';
+      return <DrowsyIcon size={size} color={color} />;
     case 'HEAD_DOWN':
-      return '⬇️';
+      return <HeadDownIcon size={size} color={color} />;
     case 'LOOKING_AWAY':
-      return '👀';
+      return <LookingAwayIcon size={size} color={color} />;
     default:
-      return '⚠️';
+      return <AlertTriangleIcon size={size} color={color} />;
   }
 };
 
@@ -82,7 +94,6 @@ interface SessionListItemProps {
 const SessionListItem: React.FC<SessionListItemProps> = ({ session, onPress }) => {
   const scoreColor = getRiskColor(session.safetyScore);
   const mostCommon = getMostCommonDistraction(session.reasonBreakdown);
-  const distractionIcon = getDistractionIcon(mostCommon);
 
   return (
     <TouchableOpacity style={styles.sessionCard} onPress={onPress} activeOpacity={0.7}>
@@ -108,7 +119,9 @@ const SessionListItem: React.FC<SessionListItemProps> = ({ session, onPress }) =
             Distractions: {session.distractionEventsCount}
           </Text>
           {mostCommon !== 'NONE' && (
-            <Text style={styles.distractionIcon}>{distractionIcon}</Text>
+            <View style={styles.distractionIconContainer}>
+              {getDistractionIcon(mostCommon, 18, COLORS.warning)}
+            </View>
           )}
         </View>
       </View>
@@ -119,7 +132,9 @@ const SessionListItem: React.FC<SessionListItemProps> = ({ session, onPress }) =
 // Empty state component
 const EmptyState: React.FC<{ searchQuery: string }> = ({ searchQuery }) => (
   <View style={styles.emptyContainer}>
-    <Text style={styles.emptyIcon}>📊</Text>
+    <View style={styles.emptyIconContainer}>
+      <ChartBarIcon size={64} color={COLORS.textTertiary} />
+    </View>
     <Text style={styles.emptyTitle}>No Sessions Found</Text>
     <Text style={styles.emptyText}>
       {searchQuery
@@ -381,7 +396,7 @@ export default function ReportsScreen() {
             style={styles.clearButton}
             onPress={() => setSearchQuery('')}
           >
-            <Text style={styles.clearButtonText}>✕</Text>
+            <CloseIcon size={20} color={COLORS.textSecondary} />
           </TouchableOpacity>
         )}
       </View>
@@ -414,25 +429,24 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   header: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.sm,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    ...TYPOGRAPHY.display.small,
     color: COLORS.textPrimary,
   },
   filterContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 8,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    gap: SPACING.sm,
   },
   filterButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.xl,
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
@@ -442,8 +456,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.primary,
   },
   filterButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
+    ...TYPOGRAPHY.label.large,
     color: COLORS.textSecondary,
   },
   filterButtonTextSelected: {
@@ -452,51 +465,48 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 16,
-    marginBottom: 16,
+    marginHorizontal: SPACING.lg,
+    marginBottom: SPACING.lg,
     backgroundColor: COLORS.surface,
-    borderRadius: 12,
+    borderRadius: RADIUS.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
   searchInput: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    ...TYPOGRAPHY.body.large,
     color: COLORS.textPrimary,
   },
   clearButton: {
-    padding: 12,
-  },
-  clearButtonText: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
+    padding: SPACING.md,
   },
   listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 24,
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING['2xl'],
     flexGrow: 1,
   },
   sessionCard: {
     backgroundColor: COLORS.surfaceCard,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
+    ...SHADOWS.sm,
   },
   sessionHeader: {
-    marginBottom: 8,
+    marginBottom: SPACING.sm,
   },
   sessionDate: {
-    fontSize: 16,
+    ...TYPOGRAPHY.body.large,
     fontWeight: '600',
     color: COLORS.textPrimary,
   },
   sessionDuration: {
-    fontSize: 14,
+    ...TYPOGRAPHY.body.medium,
     color: COLORS.textSecondary,
-    marginBottom: 12,
+    marginBottom: SPACING.md,
   },
   sessionFooter: {
     flexDirection: 'row',
@@ -508,53 +518,55 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scoreLabel: {
-    fontSize: 14,
+    ...TYPOGRAPHY.body.medium,
     color: COLORS.textSecondary,
   },
   scoreValue: {
-    fontSize: 16,
+    ...TYPOGRAPHY.body.large,
     fontWeight: 'bold',
-    marginRight: 6,
+    marginRight: SPACING.xs + 2,
   },
   scoreBadge: {
     width: 10,
     height: 10,
-    borderRadius: 5,
+    borderRadius: RADIUS.xs + 1,
   },
   distractionInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: SPACING.xs + 2,
   },
   distractionText: {
-    fontSize: 14,
+    ...TYPOGRAPHY.body.medium,
     color: COLORS.textSecondary,
   },
-  distractionIcon: {
-    fontSize: 16,
+  distractionIconContainer: {
+    width: 18,
+    height: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   separator: {
-    height: 12,
+    height: SPACING.md,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
-    paddingTop: 80,
+    paddingHorizontal: SPACING['3xl'],
+    paddingTop: SPACING['6xl'] + 16,
   },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: 16,
+  emptyIconContainer: {
+    marginBottom: SPACING.lg,
+    opacity: 0.6,
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
+    ...TYPOGRAPHY.heading.h2,
     color: COLORS.textPrimary,
-    marginBottom: 8,
+    marginBottom: SPACING.sm,
   },
   emptyText: {
-    fontSize: 16,
+    ...TYPOGRAPHY.body.large,
     color: COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
@@ -565,8 +577,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: 16,
-    fontSize: 16,
+    marginTop: SPACING.lg,
+    ...TYPOGRAPHY.body.large,
     color: COLORS.textSecondary,
   },
 });

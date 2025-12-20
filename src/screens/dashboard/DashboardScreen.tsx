@@ -11,6 +11,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSession } from '../../hooks/useSession';
 import { COLORS, getDistractionReasonLabel, getRiskColor } from '../../constants/colors';
+import { TYPOGRAPHY } from '../../constants/typography';
+import { SPACING, RADIUS, SHADOWS } from '../../constants/spacing';
+import { CircularGauge } from '../../components/ui/CircularGauge';
+import { Chart } from '../../components/ui/Chart';
 
 // ============================================
 // Dashboard Screen Component
@@ -107,19 +111,15 @@ export const DashboardScreen: React.FC = () => {
 
         {/* Score Gauge Section */}
         <View style={styles.gaugeSection}>
-          <View style={styles.gaugeContainer}>
-            {/* Circular Gauge Placeholder - Will be replaced by AGENT_5's CircularGauge */}
-            <View style={[styles.gaugePlaceholder, { borderColor: scoreColor }]}>
-              <Text style={[styles.scoreValue, { color: scoreColor }]}>
-                {Math.round(displayScore)}
-              </Text>
-              <Text style={styles.scoreLabel}>
-                {isSessionActive && currentSession
-                  ? currentSession.riskLevelText
-                  : 'Today\'s Avg'}
-              </Text>
-            </View>
-          </View>
+          <CircularGauge
+            score={displayScore}
+            size={220}
+            subtitle={
+              isSessionActive && currentSession
+                ? currentSession.riskLevelText
+                : 'Today\'s Average'
+            }
+          />
 
           {/* Live Session Info */}
           {isSessionActive && currentSession && (
@@ -195,31 +195,28 @@ export const DashboardScreen: React.FC = () => {
 
         {/* Weekly Trends Section */}
         <View style={styles.trendsSection}>
-          <Text style={styles.sectionTitle}>Trends - Last 7 Days</Text>
+          <Text style={styles.sectionTitle}>7-Day Trend</Text>
           <View style={styles.chartContainer}>
-            {/* Chart Placeholder - Will be replaced by AGENT_5's Chart component */}
-            <View style={styles.chartPlaceholder}>
-              {weeklySummary.trendData.length > 0 ? (
-                <View style={styles.miniChart}>
-                  {weeklySummary.trendData.map((point, index) => (
-                    <View
-                      key={index}
-                      style={[
-                        styles.chartBar,
-                        {
-                          height: `${point.score}%`,
-                          backgroundColor: getRiskColor(point.score),
-                        },
-                      ]}
-                    />
-                  ))}
-                </View>
-              ) : (
-                <Text style={styles.chartPlaceholderText}>
+            {weeklySummary.trendData.length > 0 ? (
+              <Chart
+                type="area"
+                data={weeklySummary.trendData.map(point => ({
+                  x: point.date,
+                  y: point.score,
+                }))}
+                height={160}
+                animated
+              />
+            ) : (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyStateText}>
                   No data available yet
                 </Text>
-              )}
-            </View>
+                <Text style={styles.emptyStateSubtext}>
+                  Complete a few drives to see your trends
+                </Text>
+              </View>
+            )}
           </View>
           <View style={styles.trendSummary}>
             <View style={styles.trendItem}>
@@ -281,130 +278,108 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 8,
+    paddingHorizontal: SPACING.xl,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.sm,
   },
   greeting: {
-    fontSize: 28,
-    fontWeight: '700',
+    ...TYPOGRAPHY.display.small,
     color: COLORS.textPrimary,
   },
   date: {
-    fontSize: 16,
+    ...TYPOGRAPHY.body.large,
     color: COLORS.textSecondary,
-    marginTop: 4,
+    marginTop: SPACING.xs,
   },
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 12,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    marginTop: SPACING.md,
+    paddingVertical: SPACING.xs + 2,
+    paddingHorizontal: SPACING.md,
     backgroundColor: COLORS.surface,
-    borderRadius: 16,
+    borderRadius: RADIUS.xl,
     alignSelf: 'flex-start',
   },
   statusDot: {
     width: 8,
     height: 8,
-    borderRadius: 4,
-    marginRight: 8,
+    borderRadius: RADIUS.xs,
+    marginRight: SPACING.sm,
   },
   statusText: {
-    fontSize: 14,
+    ...TYPOGRAPHY.body.medium,
     color: COLORS.textSecondary,
   },
 
   // Error Banner
   errorBanner: {
-    marginHorizontal: 20,
-    marginTop: 12,
-    padding: 12,
+    marginHorizontal: SPACING.xl,
+    marginTop: SPACING.md,
+    padding: SPACING.md,
     backgroundColor: COLORS.dangerTransparent,
-    borderRadius: 8,
+    borderRadius: RADIUS.md,
     borderLeftWidth: 3,
     borderLeftColor: COLORS.danger,
   },
   errorText: {
-    fontSize: 14,
+    ...TYPOGRAPHY.body.medium,
     color: COLORS.danger,
   },
   errorDismiss: {
-    fontSize: 12,
+    ...TYPOGRAPHY.body.small,
     color: COLORS.textTertiary,
-    marginTop: 4,
+    marginTop: SPACING.xs,
   },
 
   // Gauge Section
   gaugeSection: {
     alignItems: 'center',
-    paddingVertical: 24,
-  },
-  gaugeContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  gaugePlaceholder: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    borderWidth: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.surface,
-  },
-  scoreValue: {
-    fontSize: 56,
-    fontWeight: '700',
-  },
-  scoreLabel: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
-    marginTop: 4,
+    paddingVertical: SPACING['2xl'],
   },
   liveInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: SPACING.lg,
   },
   liveBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.dangerTransparent,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 4,
-    marginRight: 12,
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.sm,
+    borderRadius: RADIUS.xs,
+    marginRight: SPACING.md,
   },
   liveIndicator: {
     width: 8,
     height: 8,
-    borderRadius: 4,
+    borderRadius: RADIUS.xs,
     backgroundColor: COLORS.danger,
-    marginRight: 6,
+    marginRight: SPACING.xs + 2,
   },
   liveText: {
-    fontSize: 12,
+    ...TYPOGRAPHY.label.small,
     fontWeight: '700',
     color: COLORS.danger,
   },
   durationText: {
-    fontSize: 16,
+    ...TYPOGRAPHY.body.large,
     color: COLORS.textSecondary,
     fontWeight: '500',
   },
 
   // Button Section
   buttonSection: {
-    paddingHorizontal: 20,
-    marginBottom: 24,
+    paddingHorizontal: SPACING.xl,
+    marginBottom: SPACING['2xl'],
   },
   sessionButton: {
-    paddingVertical: 16,
-    borderRadius: 12,
+    paddingVertical: SPACING.lg,
+    borderRadius: RADIUS.lg,
     alignItems: 'center',
     justifyContent: 'center',
+    ...SHADOWS.md,
   },
   startButton: {
     backgroundColor: COLORS.primary,
@@ -416,115 +391,109 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    fontSize: 18,
-    fontWeight: '600',
+    ...TYPOGRAPHY.heading.h3,
     color: COLORS.textPrimary,
   },
 
   // Stats Section
   statsSection: {
-    paddingHorizontal: 20,
-    marginBottom: 24,
+    paddingHorizontal: SPACING.xl,
+    marginBottom: SPACING['2xl'],
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
+    ...TYPOGRAPHY.heading.h3,
     color: COLORS.textPrimary,
-    marginBottom: 12,
+    marginBottom: SPACING.md,
   },
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginHorizontal: -6,
+    marginHorizontal: -SPACING.xs - 2,
   },
   statCard: {
     width: '50%',
-    padding: 6,
+    padding: SPACING.xs + 2,
   },
   statAccent: {
     position: 'absolute',
-    left: 6,
-    top: 6,
-    bottom: 6,
+    left: SPACING.xs + 2,
+    top: SPACING.xs + 2,
+    bottom: SPACING.xs + 2,
     width: 4,
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
+    borderTopLeftRadius: RADIUS.md,
+    borderBottomLeftRadius: RADIUS.md,
   },
   statValue: {
-    fontSize: 20,
-    fontWeight: '700',
+    ...TYPOGRAPHY.heading.h2,
     color: COLORS.textPrimary,
-    marginLeft: 8,
+    marginLeft: SPACING.sm,
     backgroundColor: COLORS.surface,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    paddingLeft: 20,
-    borderRadius: 8,
+    paddingVertical: SPACING.lg,
+    paddingHorizontal: SPACING.lg,
+    paddingLeft: SPACING.xl,
+    borderRadius: RADIUS.md,
+    ...SHADOWS.sm,
   },
   statLabel: {
-    fontSize: 13,
+    ...TYPOGRAPHY.label.medium,
     color: COLORS.textSecondary,
     position: 'absolute',
-    bottom: 14,
-    right: 18,
+    bottom: SPACING.md + 2,
+    right: SPACING.lg + 2,
   },
 
   // Trends Section
   trendsSection: {
-    paddingHorizontal: 20,
+    paddingHorizontal: SPACING.xl,
   },
   chartContainer: {
     backgroundColor: COLORS.surface,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    marginBottom: SPACING.md,
+    ...SHADOWS.sm,
   },
-  chartPlaceholder: {
-    height: 120,
+  emptyState: {
+    height: 160,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: SPACING.xl,
   },
-  chartPlaceholderText: {
-    fontSize: 14,
+  emptyStateText: {
+    ...TYPOGRAPHY.body.medium,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+  },
+  emptyStateSubtext: {
+    ...TYPOGRAPHY.body.small,
     color: COLORS.textTertiary,
-  },
-  miniChart: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-around',
-    width: '100%',
-    height: '100%',
-    paddingHorizontal: 8,
-  },
-  chartBar: {
-    width: 24,
-    borderRadius: 4,
-    minHeight: 8,
+    textAlign: 'center',
+    marginTop: SPACING.xs,
   },
   trendSummary: {
     flexDirection: 'row',
     backgroundColor: COLORS.surface,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    ...SHADOWS.sm,
   },
   trendItem: {
     flex: 1,
     alignItems: 'center',
   },
   trendLabel: {
-    fontSize: 12,
+    ...TYPOGRAPHY.label.medium,
     color: COLORS.textSecondary,
-    marginBottom: 4,
+    marginBottom: SPACING.xs,
   },
   trendValue: {
-    fontSize: 18,
-    fontWeight: '700',
+    ...TYPOGRAPHY.heading.h3,
     color: COLORS.textPrimary,
   },
   trendDivider: {
     width: 1,
     backgroundColor: COLORS.border,
-    marginHorizontal: 8,
+    marginHorizontal: SPACING.sm,
   },
 });
 

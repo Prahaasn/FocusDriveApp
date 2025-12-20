@@ -12,7 +12,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS } from '@constants/colors';
+import { TYPOGRAPHY } from '@constants/typography';
+import { SPACING, RADIUS, SHADOWS } from '@constants/spacing';
 import type { RootStackParamList } from '@types/index';
+import { CarIcon, ChartLineIcon, TargetIcon } from '../../components/icons/Icons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,7 +25,7 @@ interface OnboardingSlide {
   id: string;
   title: string;
   description: string;
-  icon: string;
+  icon: React.ReactNode;
 }
 
 const ONBOARDING_SLIDES: OnboardingSlide[] = [
@@ -30,19 +33,19 @@ const ONBOARDING_SLIDES: OnboardingSlide[] = [
     id: '1',
     title: 'Drive Safer',
     description: 'FocusDrive monitors your driving behavior in real-time to help you stay focused and avoid distractions.',
-    icon: '🚗',
+    icon: <CarIcon size={64} color={COLORS.primary} />,
   },
   {
     id: '2',
     title: 'Track Progress',
     description: 'View detailed reports of your driving sessions, safety scores, and improvement trends over time.',
-    icon: '📊',
+    icon: <ChartLineIcon size={64} color={COLORS.primary} />,
   },
   {
     id: '3',
     title: 'Stay Alert',
     description: 'Get instant feedback when distracted driving is detected. Build better driving habits every day.',
-    icon: '🎯',
+    icon: <TargetIcon size={64} color={COLORS.primary} />,
   },
 ];
 
@@ -83,7 +86,7 @@ export const WelcomeScreen: React.FC = () => {
   const renderSlide = ({ item }: { item: OnboardingSlide }) => (
     <View style={styles.slide}>
       <View style={styles.iconContainer}>
-        <Text style={styles.icon}>{item.icon}</Text>
+        {item.icon}
       </View>
       <Text style={styles.slideTitle}>{item.title}</Text>
       <Text style={styles.slideDescription}>{item.description}</Text>
@@ -165,13 +168,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   header: {
-    paddingTop: 20,
-    paddingHorizontal: 24,
+    paddingTop: SPACING.xl,
+    paddingHorizontal: SPACING['2xl'],
     alignItems: 'center',
   },
   logo: {
-    fontSize: 28,
-    fontWeight: '700',
+    ...TYPOGRAPHY.display.small,
     color: COLORS.primary,
     letterSpacing: 1,
   },
@@ -180,88 +182,86 @@ const styles = StyleSheet.create({
   },
   slide: {
     width,
-    paddingHorizontal: 32,
+    paddingHorizontal: SPACING['3xl'],
     paddingTop: height * 0.08,
     alignItems: 'center',
   },
   iconContainer: {
     width: 120,
     height: 120,
-    borderRadius: 60,
-    backgroundColor: COLORS.surfaceLight,
+    borderRadius: RADIUS['2xl'] * 3,
+    backgroundColor: COLORS.successTransparent,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 40,
-  },
-  icon: {
-    fontSize: 56,
+    marginBottom: SPACING['4xl'],
+    ...SHADOWS.md,
   },
   slideTitle: {
-    fontSize: 28,
-    fontWeight: '700',
+    ...TYPOGRAPHY.display.small,
     color: COLORS.textPrimary,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: SPACING.lg,
   },
   slideDescription: {
-    fontSize: 16,
+    ...TYPOGRAPHY.body.large,
     color: COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
-    paddingHorizontal: 16,
+    paddingHorizontal: SPACING.lg,
   },
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: SPACING.xl,
   },
   paginationDot: {
     width: 8,
     height: 8,
-    borderRadius: 4,
+    borderRadius: RADIUS.xs,
     backgroundColor: COLORS.borderLight,
-    marginHorizontal: 4,
+    marginHorizontal: SPACING.xs,
   },
   paginationDotActive: {
     width: 24,
     backgroundColor: COLORS.primary,
   },
   footer: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
+    paddingHorizontal: SPACING['2xl'],
+    paddingBottom: SPACING['2xl'],
   },
   nextButton: {
     backgroundColor: COLORS.surfaceLight,
-    borderRadius: 12,
-    paddingVertical: 16,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.lg,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: COLORS.border,
   },
   nextButtonText: {
-    fontSize: 16,
+    ...TYPOGRAPHY.body.large,
     fontWeight: '600',
     color: COLORS.textPrimary,
   },
   getStartedButton: {
     backgroundColor: COLORS.primary,
-    borderRadius: 12,
-    paddingVertical: 16,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.lg,
     alignItems: 'center',
+    ...SHADOWS.lg,
   },
   getStartedButtonText: {
-    fontSize: 16,
+    ...TYPOGRAPHY.body.large,
     fontWeight: '600',
     color: COLORS.background,
   },
   signInLink: {
-    marginTop: 20,
+    marginTop: SPACING.xl,
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: SPACING.sm,
   },
   signInText: {
-    fontSize: 14,
+    ...TYPOGRAPHY.body.medium,
     color: COLORS.textSecondary,
   },
   signInTextBold: {

@@ -19,6 +19,8 @@ import {
   getDistractionReasonColor,
   getDistractionReasonLabel,
 } from '../../constants/colors';
+import { TYPOGRAPHY } from '../../constants/typography';
+import { SPACING, RADIUS, SHADOWS } from '../../constants/spacing';
 import { formatDate, formatTime, formatDuration } from '../../utils/formatting';
 import {
   RootStackParamList,
@@ -26,67 +28,10 @@ import {
   DistractionEvent,
   DistractionReason,
 } from '../../types';
+import { CircularGauge } from '../../components/ui/CircularGauge';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type SessionDetailRouteProp = RouteProp<RootStackParamList, 'SessionDetail'>;
-
-// Circular Gauge Component
-interface CircularGaugeProps {
-  score: number;
-  size?: number;
-}
-
-const CircularGauge: React.FC<CircularGaugeProps> = ({ score, size = 160 }) => {
-  const color = getRiskColor(score);
-  const riskText = getRiskLevelText(
-    score >= 85 ? 'low' : score >= 70 ? 'medium' : 'high'
-  );
-  const strokeWidth = 12;
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const progress = (score / 100) * circumference;
-
-  return (
-    <View style={[styles.gaugeContainer, { width: size, height: size }]}>
-      {/* Background circle */}
-      <View
-        style={[
-          styles.gaugeBackground,
-          {
-            width: size - strokeWidth,
-            height: size - strokeWidth,
-            borderRadius: (size - strokeWidth) / 2,
-            borderWidth: strokeWidth,
-            borderColor: COLORS.surface,
-          },
-        ]}
-      />
-      {/* Progress arc (simplified visual) */}
-      <View
-        style={[
-          styles.gaugeProgress,
-          {
-            width: size - strokeWidth,
-            height: size - strokeWidth,
-            borderRadius: (size - strokeWidth) / 2,
-            borderWidth: strokeWidth,
-            borderColor: color,
-            borderTopColor: 'transparent',
-            borderRightColor: score < 75 ? 'transparent' : color,
-            borderBottomColor: score < 50 ? 'transparent' : color,
-            borderLeftColor: score < 25 ? 'transparent' : color,
-            transform: [{ rotate: '-45deg' }],
-          },
-        ]}
-      />
-      {/* Score text */}
-      <View style={styles.gaugeTextContainer}>
-        <Text style={[styles.gaugeScore, { color }]}>{score}</Text>
-        <Text style={styles.gaugeRiskText}>{riskText}</Text>
-      </View>
-    </View>
-  );
-};
 
 // Metric Card Component
 interface MetricCardProps {
